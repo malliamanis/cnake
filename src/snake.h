@@ -23,6 +23,8 @@ struct snake_piece {
 struct snake {
 	uint32_t plane_width, plane_height;
 
+	uint32_t score, best_score;
+
 	uint32_t length;
 	struct snake_piece *pieces;
 	size_t pieces_size;

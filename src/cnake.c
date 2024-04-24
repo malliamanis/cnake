@@ -135,6 +135,8 @@ static void update(void)
 
 static void tick(void)
 {
+	if (s.player.dead)
+		s.last_key_pressed = DIRECTION_NULL;
 	snake_tick(s.last_key_pressed, &s.player);
 
 	if (s.player.pieces[0].pos.bits == s.apple_pos.bits) {

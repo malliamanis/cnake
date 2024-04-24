@@ -3,7 +3,6 @@
 #include "snake.h"
 
 static void death_tick(struct snake *s);
-static void reset_pos(struct snake *s);
 
 struct snake snake_create(uint32_t plane_width, uint32_t plane_height, vec2 initial_pos)
 {
@@ -19,7 +18,7 @@ struct snake snake_create(uint32_t plane_width, uint32_t plane_height, vec2 init
 		.head_prev_pos = initial_pos
 	};
 
-	reset_pos(&s);
+	s.pieces[0] = (struct snake_piece) { .pos = initial_pos };
 
 	return s;
 }
@@ -33,38 +32,58 @@ void snake_tick(enum direction last_key_pressed, struct snake *s)
 
 	s->head_prev_pos = s->pieces[0].pos;
 
-	vec2 head_new_pos;
+	vec2 head_old_pos;
 	enum direction last_dir = last_key_pressed;
 
 	for (uint32_t i = 0; i < s->length; ++i) {
 		struct snake_piece *piece = &s->pieces[i];
 
-		if (piece->pos.bits == head_new_pos.bits && i != 0)
-			s->dead = true;
-
 		enum direction temp_dir = piece->dir;
 		piece->dir = last_dir;
 		last_dir = temp_dir;
+		
+		if (i == 0)
+			head_old_pos = piece->pos;
 
 		switch (piece->dir) {
 			case DIRECTION_LEFT:
-				--piece->pos.x;
+				if (piece->pos.x == 0)
+					piece->pos.x = s->plane_width - 1;
+				else
+					--piece->pos.x;
 				break;
 			case DIRECTION_RIGHT:
-				++piece->pos.x;
+				if (piece->pos.x == s->plane_width - 1)
+					piece->pos.x = 0;
+				else
+					++piece->pos.x;
 				break;
 			case DIRECTION_UP:
-				--piece->pos.y;
+				if (piece->pos.y == 0)
+					piece->pos.y = s->plane_height - 1;
+				else
+					--piece->pos.y;
 				break;
 			case DIRECTION_DOWN:
-				++piece->pos.y;
+				if (piece->pos.y == s->plane_height - 1)
+					piece->pos.y = 0;
+				else
+					++piece->pos.y;
 				break;
-			default:
-				break;
+			case DIRECTION_NULL:
+				return;
 		}
-		
-		if (i == 0)
-			head_new_pos = piece->pos;
+
+		// dirty solution
+		if (i == 0) {
+			for (int j = 1; j < s->length; ++j) {
+				if (s->pieces[0].pos.bits == s->pieces[j].pos.bits) {
+					s->dead = true;
+					s->pieces[0].pos = head_old_pos;
+					return;
+				}
+			}
+		}
 	}
 }
 
@@ -78,7 +97,7 @@ static void death_tick(struct snake *s)
 	else {
 		s->dead = false;
 		s->death_timer = 0;
-		reset_pos(s);
+		s->score = 0;
 	}
 }
 
@@ -106,21 +125,21 @@ void snake_add_piece(struct snake *s)
 	}
 
 	s->pieces[s->length++] = (struct snake_piece) { .pos = new_pos };
-}
 
-static void reset_pos(struct snake *s)
-{
-	s->pieces[0] = (struct snake_piece) { .pos = s->head_initial_pos };
+	if (s->best_score < ++s->score)
+		s->best_score = s->score;
+	printf("\nBest score: %d\nCurrent score: %d\n", s->best_score, s->score);
+	
 }
 
 void snake_render(SDL_Renderer *renderer, struct snake *s)
 {
 	SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0xFF);
 
-	vec2 piece_pos;
+	// vec2 piece_pos;
 	for (uint32_t i = 0; i < s->length; ++i) {
-		piece_pos = s->pieces[i].pos;
-		SDL_RenderDrawPoint(renderer, piece_pos.x, piece_pos.y);
+		// piece_pos = s->pieces[i].pos;
+		SDL_RenderDrawPoint(renderer, s->pieces[i].pos.x, s->pieces[i].pos.y);
 	}
 }
 

@@ -1,5 +1,4 @@
-#include <SDL2/SDL_render.h>
-#include <inttypes.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "apple.h"
@@ -12,9 +11,12 @@ vec2 apple_get_random_pos(struct snake *player)
 		pos.x = rand() % player->plane_width;
 		pos.y = rand() % player->plane_height;
 
-		vec2 piece_pos;
-		for (uint32_t i = 0; i < player->length; ++i)
+		for (uint32_t i = 0; i < player->length; ++i) {
 			inside_player = (pos.bits == player->pieces[i].pos.bits);
+
+			if (inside_player)
+				break;
+		}
 	} while (inside_player);
 
 	return pos;
