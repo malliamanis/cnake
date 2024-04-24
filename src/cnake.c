@@ -41,7 +41,7 @@ static void init(uint32_t window_width, uint32_t window_height, uint32_t render_
 	SDL_Init(SDL_INIT_VIDEO);
 
 	s = (struct state) {
-		.width = window_height / render_scale,
+		.width = window_width / render_scale,
 		.height = window_height / render_scale,
 		.quit = false,
 	};

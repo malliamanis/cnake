@@ -76,7 +76,7 @@ void snake_tick(enum direction last_key_pressed, struct snake *s)
 
 		// dirty solution
 		if (i == 0) {
-			for (int j = 1; j < s->length; ++j) {
+			for (uint32_t j = 1; j < s->length; ++j) {
 				if (s->pieces[0].pos.bits == s->pieces[j].pos.bits) {
 					s->dead = true;
 					s->pieces[0].pos = head_old_pos;
