@@ -3,9 +3,15 @@
 
 #include <stdint.h>
 
-typedef struct {
-	uint32_t x;
-	uint32_t y;
+#define TICKS_PER_SECOND 8
+
+typedef union {
+	struct {
+		uint32_t x;
+		uint32_t y;
+	};
+
+	uint64_t bits;
 } vec2;
 
 void cnake_run(uint32_t width, uint32_t height, uint32_t scale);

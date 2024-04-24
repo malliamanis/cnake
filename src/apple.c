@@ -13,14 +13,8 @@ vec2 apple_get_random_pos(struct snake *player)
 		pos.y = rand() % player->plane_height;
 
 		vec2 piece_pos;
-		for (uint32_t i = 0; i < player->length; ++i) {
-			piece_pos = player->pieces[i].pos;
-
-			if (pos.x == piece_pos.x || pos.y == piece_pos.y)
-				inside_player = true;
-			else
-				inside_player = false;
-		}
+		for (uint32_t i = 0; i < player->length; ++i)
+			inside_player = (pos.bits == player->pieces[i].pos.bits);
 	} while (inside_player);
 
 	return pos;
