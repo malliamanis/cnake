@@ -2,28 +2,28 @@
 
 #include "snake.h"
 
-static void death_tick(struct snake *s);
+static void death_tick(Snake *s);
 
-struct snake snake_create(uint32_t plane_width, uint32_t plane_height, vec2 initial_pos)
+#define PIECES_INITIAL_SIZE 16
+
+Snake snake_create(uint32_t plane_width, uint32_t plane_height, vec2 initial_pos)
 {
-	const size_t initial_pieces_size = 16;
-
-	struct snake s = {
+	Snake s = {
 		.plane_width = plane_width,
 		.plane_height = plane_height,
 		.length = 1,
-		.pieces = calloc(initial_pieces_size, sizeof(*s.pieces)),
-		.pieces_size = initial_pieces_size,
+		.pieces_size = PIECES_INITIAL_SIZE,
+		.pieces = calloc(PIECES_INITIAL_SIZE, sizeof(*s.pieces)),
 		.head_initial_pos = initial_pos,
 		.head_prev_pos = initial_pos
 	};
 
-	s.pieces[0] = (struct snake_piece) { .pos = initial_pos };
+	s.pieces[0] = (SnakePiece) { .pos = initial_pos };
 
 	return s;
 }
 
-void snake_tick(enum direction last_key_pressed, struct snake *s)
+void snake_tick(Direction last_key_pressed, Snake *s)
 {
 	if (s->dead) {
 		death_tick(s);
@@ -33,12 +33,12 @@ void snake_tick(enum direction last_key_pressed, struct snake *s)
 	s->head_prev_pos = s->pieces[0].pos;
 
 	vec2 head_old_pos;
-	enum direction last_dir = last_key_pressed;
+	Direction last_dir = last_key_pressed;
 
 	for (uint32_t i = 0; i < s->length; ++i) {
-		struct snake_piece *piece = &s->pieces[i];
+		SnakePiece *piece = &s->pieces[i];
 
-		enum direction temp_dir = piece->dir;
+		Direction temp_dir = piece->dir;
 		piece->dir = last_dir;
 		last_dir = temp_dir;
 		
@@ -87,13 +87,13 @@ void snake_tick(enum direction last_key_pressed, struct snake *s)
 	}
 }
 
-static void death_tick(struct snake *s)
+static void death_tick(Snake *s)
 {
 	if (++s->death_timer < TICKS_PER_SECOND)
 		return;
 
 	if (s->length > 1)
-		s->pieces[--s->length] = (struct snake_piece) {0};
+		s->pieces[--s->length] = (SnakePiece) {0};
 	else {
 		s->dead = false;
 		s->death_timer = 0;
@@ -101,7 +101,7 @@ static void death_tick(struct snake *s)
 	}
 }
 
-void snake_add_piece(struct snake *s)
+void snake_add_piece(Snake *s)
 {
 	if (s->length == s->pieces_size)
 		s->pieces = realloc(s->pieces, (s->pieces_size *= 2) * sizeof(*s->pieces));
@@ -124,7 +124,7 @@ void snake_add_piece(struct snake *s)
 			break;
 	}
 
-	s->pieces[s->length++] = (struct snake_piece) { .pos = new_pos };
+	s->pieces[s->length++] = (SnakePiece) { .pos = new_pos };
 
 	if (s->best_score < ++s->score)
 		s->best_score = s->score;
@@ -132,7 +132,7 @@ void snake_add_piece(struct snake *s)
 	
 }
 
-void snake_render(SDL_Renderer *renderer, struct snake *s)
+void snake_render(SDL_Renderer *renderer, Snake *s)
 {
 	SDL_SetRenderDrawColor(renderer, 0x00, 0xFF, 0x00, 0xFF);
 
@@ -143,8 +143,8 @@ void snake_render(SDL_Renderer *renderer, struct snake *s)
 	}
 }
 
-void snake_destroy(struct snake *s)
+void snake_destroy(Snake *s)
 {
 	free(s->pieces);
-	*s = (struct snake) {0};
+	*s = (Snake) {0};
 }

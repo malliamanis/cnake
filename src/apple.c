@@ -1,9 +1,8 @@
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "apple.h"
 
-vec2 apple_get_random_pos(struct snake *player)
+vec2 apple_get_random_pos(Snake *player)
 {
 	vec2 pos;
 	bool inside_player;

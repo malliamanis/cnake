@@ -5,7 +5,7 @@
 
 #include "snake.h"
 
-vec2 apple_get_random_pos(struct snake *player);
+vec2 apple_get_random_pos(Snake *player);
 void apple_render(SDL_Renderer *renderer, vec2 apple_pos);
 
 #endif

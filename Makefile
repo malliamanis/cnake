@@ -7,7 +7,7 @@ YELLOW = \033[1;33m
 CC = clang
 LD = clang
 
-CFLAGS =  -std=c2x -pedantic -Wall -Wextra -Wfloat-equal -Wundef -Wshadow -Wpointer-arith -Wcast-align -Wunreachable-code -Isrc
+CFLAGS =  -std=c11 -pedantic -Wall -Wextra -Wfloat-equal -Wundef -Wshadow -Wpointer-arith -Wcast-align -Wunreachable-code -Isrc
 
 CFLAGS_DEB = -O0 -g -gdwarf-4
 CFLAGS_REL = -O3
@@ -24,8 +24,8 @@ REL_DIR = $(BUILD_DIR)/release
 OBJ_DEB_DIR = $(DEB_DIR)/obj
 OBJ_REL_DIR = $(REL_DIR)/obj
 SRC         = $(call rwildcard, src, *.c)
-OBJ_DEB     = $(patsubst src/%.c, $(OBJ_DEB_DIR)/%.o.d, $(SRC))
-OBJ_REL     = $(patsubst src/%.c, $(OBJ_REL_DIR)/%.o,   $(SRC))
+OBJ_DEB     = $(patsubst src/%.c, $(OBJ_DEB_DIR)/%.o, $(SRC))
+OBJ_REL     = $(patsubst src/%.c, $(OBJ_REL_DIR)/%.o, $(SRC))
 
 EXE_DEB = $(DEB_DIR)/cnake
 EXE_REL = $(REL_DIR)/cnake
@@ -45,7 +45,7 @@ $(OBJ_REL_DIR)/%.o: src/%.c
 	@ echo -e "$(GREEN)COMPILING OBJECT$(NC) $@"
 	@ $(CC) $(CFLAGS) $(CFLAGS_REL) -c $< -o $@
 
-$(OBJ_DEB_DIR)/%.o.d: src/%.c
+$(OBJ_DEB_DIR)/%.o: src/%.c
 	@ mkdir -p $(@D)
 	@ echo -e "$(GREEN)COMPILING OBJECT$(NC) $@"
 	@ $(CC) $(CFLAGS) $(CFLAGS_DEB) -c $< -o $@
