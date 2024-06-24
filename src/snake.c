@@ -11,14 +11,22 @@ Snake snake_create(uint32_t plane_width, uint32_t plane_height, vec2 initial_pos
 	Snake s = {
 		.plane_width = plane_width,
 		.plane_height = plane_height,
-		.length = 1,
+		.length = 0,
 		.pieces_size = PIECES_INITIAL_SIZE,
 		.pieces = calloc(PIECES_INITIAL_SIZE, sizeof(*s.pieces)),
 		.head_initial_pos = initial_pos,
-		.head_prev_pos = initial_pos
+		.head_prev_pos = initial_pos,
 	};
 
-	s.pieces[0] = (SnakePiece) { .pos = initial_pos };
+	for (uint32_t i = 0; i < 3; ++i) {
+		s.pieces[i] = (SnakePiece) {
+			.pos = initial_pos,
+			.dir = DIRECTION_DOWN
+		};
+		s.pieces[i].pos.y -= i;
+
+		++s.length;
+	}
 
 	return s;
 }

@@ -21,7 +21,7 @@ void cnake_run(uint32_t window_width, uint32_t window_height, uint32_t render_sc
 	uint32_t height = window_height / render_scale;
 	bool quit = false;
 
-	Direction last_key_pressed;
+	Direction last_key_pressed = DIRECTION_DOWN;
 	Snake player = snake_create(width, height, (vec2) { .x = width >> 1, .y = height >> 1 });
 	vec2 apple_pos = apple_get_random_pos(&player);
 
